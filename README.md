@@ -1,3 +1,7 @@
-# DocumentsMerger-MS-Office-to-PDF-API
+# DocumentsMerger-MS-Office-to-PDF
 
-![GitHub MSOfficeToPDF](https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fgasparnagy.com%2Fwp-content%2Fuploads%2F2017%2F04%2FNET-Core-Logo_2colors_Boxed_RGB_bitmap_BIG-300x202.png&f=1&nofb=1)
+.NET Web Api for converting multiple Microsoft Office documents and worksheets into single merged and printable PDF file.
+
+![GitHub MSOfficeToPDF](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.4X5H1d_c6gx78t_Wv1X22AAAAA%26pid%3DApi&f=1)
+
+![GitHub MSOfficeToPDF](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%3Fid%3DOIP.5PtkpNpJCz0yaH_-moeaCQHaHa%26pid%3DApi&f=1)
