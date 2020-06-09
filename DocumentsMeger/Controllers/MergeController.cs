@@ -14,7 +14,7 @@ namespace DocumentsMerger.Controllers
         public const string resultPath = "C:\\ResultPrints\\";
 
 
-        // POST api/merge  => params from SugarCRM { unique_filepath, filepath, filenames[] }
+        // POST api/merge 
         [Route("api/merge"), HttpPost]
         public IHttpActionResult MergeDocs(DocumentsData documentsData)
         {
