@@ -1,8 +1,14 @@
 ﻿using DocumentsMerger.Models;
 using System;
+using System.Collections.Generic;
 using System.Web.Http;
 using iText;
-
+using System.Net.Http;
+using System.Net;
+using System.IO;
+using System.Web.Mvc;
+using System.Net.Http.Headers;
+using System.Web;
 
 namespace DocumentsMerger.Controllers
 {
@@ -11,25 +17,28 @@ namespace DocumentsMerger.Controllers
 
         public iText.Kernel.Pdf.PdfDocument resultPdf;
 
+        public string returnResult = "";
+
         public const string resultPath = "C:\\ResultPrints\\";
 
 
         // POST api/merge 
-        [Route("api/merge"), HttpPost]
+        [System.Web.Http.Route("api/merge"), System.Web.Http.HttpPost]
         public IHttpActionResult MergeDocs(DocumentsData documentsData)
         {
+            
 
             System.IO.Directory.CreateDirectory(resultPath + documentsData.unique_filepath);
 
-            this.resultPdf = new iText.Kernel.Pdf.PdfDocument(new iText.Kernel.Pdf.PdfWriter(resultPath + documentsData.unique_filepath + "\\resultMerge.pdf"));
-            this.resultPdf.Close();
+            this.resultPdf = new iText.Kernel.Pdf.PdfDocument(new iText.Kernel.Pdf.PdfWriter(resultPath + documentsData.unique_filepath + "\\resultMerge" + documentsData.unique_filepath + ".pdf"));
+            this.returnResult = resultPath + documentsData.unique_filepath + "\\resultMerge" + documentsData.unique_filepath + ".pdf";
 
             foreach (string filename in documentsData.filenames)
             {
 
                 string[] filename_parts = filename.Split('.');
 
-                string sourceFilePath = documentsData.filepath + filename;
+                string sourceFilePath = documentsData.filepath + "\\" + filename;
 
                 if (filename_parts[1] == "docx")
                 {
@@ -76,7 +85,30 @@ namespace DocumentsMerger.Controllers
 
             this.resultPdf.Close();
 
-            return Ok(this.resultPdf);
+
+            byte[] byteArray = File.ReadAllBytes(this.returnResult);
+/*            MemoryStream ms = new MemoryStream();
+            ms.Write(byteArray, 0 , byteArray.Length);                 // FOR LARGER FILES/FILETYPES SEND FILESTREAM CONTENT TO THE RESPONSE
+            ms.Position = 0;*/
+
+            IHttpActionResult response;
+
+            HttpResponseMessage responseMsg = new HttpResponseMessage(HttpStatusCode.OK);
+
+
+            responseMsg.Content = new ByteArrayContent(byteArray);
+
+            responseMsg.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment");
+
+            responseMsg.Content.Headers.ContentDisposition.FileName = "resultMerge_" + documentsData.unique_filepath + ".pdf";
+
+            responseMsg.Content.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
+
+            response = ResponseMessage(responseMsg);
+
+
+            return response;
+
         }
 
 
