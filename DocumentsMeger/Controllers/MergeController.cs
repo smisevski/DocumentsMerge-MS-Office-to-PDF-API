@@ -1,5 +1,6 @@
 ﻿using DocumentsMerger.Models;
 using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.Web.Http;
 using iText;
@@ -9,6 +10,7 @@ using System.IO;
 using System.Web.Mvc;
 using System.Net.Http.Headers;
 using System.Web;
+using System.Runtime.InteropServices;
 
 namespace DocumentsMerger.Controllers
 {
@@ -45,7 +47,8 @@ namespace DocumentsMerger.Controllers
 
                     Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
 
-                    Microsoft.Office.Interop.Word.Document doc = app.Documents.Open(sourceFilePath, true, true, false);
+                    var docs = app.Documents;
+                    var doc = docs.Open(sourceFilePath, true, true, false); 
 
                     doc.Activate();
 
@@ -55,6 +58,19 @@ namespace DocumentsMerger.Controllers
 
                     doc.Close();
 
+                    Marshal.FinalReleaseComObject(doc);
+
+                    Marshal.FinalReleaseComObject(docs);
+
+                    app.Quit();
+
+                    Marshal.FinalReleaseComObject(app);
+
+                    app = null; doc = null;
+
+                    GC.Collect(); GC.WaitForPendingFinalizers();
+                    GC.Collect(); GC.WaitForPendingFinalizers();
+
                     this.GenerateSinglePdf(printPath);
 
                 }
@@ -63,7 +79,8 @@ namespace DocumentsMerger.Controllers
 
                     Microsoft.Office.Interop.Excel.Application app = new Microsoft.Office.Interop.Excel.Application();
 
-                    Microsoft.Office.Interop.Excel.Workbook wb = app.Workbooks.Open(sourceFilePath);
+                    var wbs = app.Workbooks;
+                    var wb = wbs.Open(sourceFilePath);
 
                     wb.Activate();
 
@@ -72,6 +89,21 @@ namespace DocumentsMerger.Controllers
                     wb.ExportAsFixedFormat(Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF, printPath.ToString());
 
                     wb.Close();
+                    
+                    Marshal.FinalReleaseComObject(wb);
+
+                    wbs.Close();
+
+                    Marshal.FinalReleaseComObject(wbs);
+
+                    app.Quit();
+
+                    Marshal.FinalReleaseComObject(app);
+
+                    app = null; wb = null; wbs = null;
+
+                    GC.Collect(); GC.WaitForPendingFinalizers();
+                    GC.Collect(); GC.WaitForPendingFinalizers();
 
                     this.GenerateSinglePdf(printPath);
 
@@ -85,10 +117,12 @@ namespace DocumentsMerger.Controllers
 
             this.resultPdf.Close();
 
+            GC.Collect(); GC.WaitForPendingFinalizers();
+            GC.Collect(); GC.WaitForPendingFinalizers();
 
             byte[] byteArray = File.ReadAllBytes(this.returnResult);
 /*            MemoryStream ms = new MemoryStream();
-            ms.Write(byteArray, 0 , byteArray.Length);                 // FOR LARGER FILES/FILETYPES SEND FILESTREAM CONTENT TO THE RESPONSE
+            ms.Write(byteArray, 0 , byteArray.Length);                 // FOR LARGER FILES SEND FILESTREAM CONTENT TO THE RESPONSE IF NEEDED
             ms.Position = 0;*/
 
             IHttpActionResult response;
