@@ -66,7 +66,7 @@ namespace DocumentsMerger.Controllers
 
                     Marshal.FinalReleaseComObject(app);
 
-                    app = null; doc = null;
+                    app = null; doc = null; docs = null;
 
                     GC.Collect(); GC.WaitForPendingFinalizers();
                     GC.Collect(); GC.WaitForPendingFinalizers();
