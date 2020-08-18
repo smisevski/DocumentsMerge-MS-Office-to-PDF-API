@@ -23,6 +23,8 @@ namespace DocumentsMerger.Controllers
 
         public const string resultPath = "C:\\ResultPrints\\";
 
+        public string remoteHost;
+
 
         // POST api/merge 
         [System.Web.Http.Route("api/merge"), System.Web.Http.HttpPost]
@@ -35,12 +37,14 @@ namespace DocumentsMerger.Controllers
             this.resultPdf = new iText.Kernel.Pdf.PdfDocument(new iText.Kernel.Pdf.PdfWriter(resultPath + documentsData.unique_filepath + "\\resultMerge" + documentsData.unique_filepath + ".pdf"));
             this.returnResult = resultPath + documentsData.unique_filepath + "\\resultMerge" + documentsData.unique_filepath + ".pdf";
 
+            this.remoteHost = HttpContext.Current.Request.Url.Host.ToString().Trim();
+
             foreach (string filename in documentsData.filenames)
             {
 
                 string[] filename_parts = filename.Split('.');
 
-                string sourceFilePath = documentsData.filepath + "\\" + filename;
+                string sourceFilePath = this.remoteHost + "/" + documentsData.filepath + "/" + filename;
 
                 if (filename_parts[1] == "docx")
                 {
